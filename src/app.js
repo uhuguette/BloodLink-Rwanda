@@ -1,10 +1,16 @@
 const path = require('path');
 const express = require('express');
 
+const { forceHttps, securityHeaders, sessions } = require('./middleware/security');
+
 const app = express();
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
+app.use(forceHttps);
+app.use(securityHeaders);
 app.use(express.json({ limit: '20kb' }));
+app.use(sessions);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, service: 'bloodlink-rwanda' });
