@@ -42,7 +42,39 @@
     call.href = 'tel:' + d.phone;
     call.querySelector('span').textContent = d.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
     li.dataset.id = d.id;
+
+    // FR 3.3: every result has a Report button.
+    const report = document.createElement('button');
+    report.type = 'button';
+    report.className = 'btn ghost small report';
+    if (reported.has(d.id)) {
+      report.disabled = true;
+      report.textContent = t('res_reported');
+    } else {
+      report.textContent = t('res_report');
+      report.title = t('res_report_hint');
+      report.addEventListener('click', () => reportDonor(d, report));
+    }
+    li.querySelector('.donor-actions').appendChild(report);
     return li;
+  }
+
+  const reported = new Set();
+
+  async function reportDonor(d, button) {
+    if (!confirm(t('res_report_confirm', { name: d.firstName }))) return;
+    button.disabled = true;
+    const { ok, status } = await window.api(`/api/donors/${d.id}/report`, { method: 'POST' });
+    if (ok || status === 409) {
+      reported.add(d.id);
+      button.textContent = t('res_reported');
+      message.className = 'alert ok';
+      message.textContent = t('res_report_thanks');
+    } else {
+      button.disabled = false;
+      message.className = 'alert error';
+      message.textContent = t('err_generic');
+    }
   }
 
   function render() {
