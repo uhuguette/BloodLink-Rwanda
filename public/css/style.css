@@ -345,3 +345,11 @@ main { padding-bottom: 56px; }
 .faq details[open] summary::after { transform: translateY(-50%) rotate(-45deg); }
 .faq details p { margin: 0 0 18px; color: var(--muted); }
 .help-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+
+/* On phones the search form comes first: in an emergency nobody should have to scroll to it. */
+@media (max-width: 760px) {
+  .hero-copy .lead, .hero-copy .steps { display: none; }
+  .hero-copy h1 { font-size: 1.9rem; margin-bottom: 0; }
+  .hero-grid { gap: 16px; padding-top: 20px; }
+  .brand small { display: none; }
+}
