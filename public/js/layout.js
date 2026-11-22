@@ -33,7 +33,7 @@
       <div class="wrap">
         <p class="emergency" data-i18n="footer_emergency"></p>
         <p data-i18n="footer_note"></p>
-        <p>&copy; ${new Date().getFullYear()} BloodLink Rwanda · Uwase Huguette, African Leadership University</p>
+        <p>&copy; ${new Date().getFullYear()} BloodLink Rwanda · Uwase Huguette, African Leadership University · <a href="/admin" data-i18n="footer_admin">Admin</a></p>
       </div>`;
   }
 
