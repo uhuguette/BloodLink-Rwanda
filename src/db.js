@@ -34,6 +34,29 @@ db.exec(`
     province TEXT NOT NULL,
     phone    TEXT NOT NULL
   );
+
+  -- A seeker reports a number that does not work. Two reports hide the donor.
+  CREATE TABLE IF NOT EXISTS reports (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    donor_id    INTEGER NOT NULL REFERENCES donors (id) ON DELETE CASCADE,
+    reported_at TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS admins (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL
+  );
+
+  -- NFR 3: every removal is kept, even after the donor row is gone.
+  CREATE TABLE IF NOT EXISTS removal_log (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    admin_username TEXT    NOT NULL,
+    donor_id       INTEGER NOT NULL,
+    donor_summary  TEXT    NOT NULL,
+    reason         TEXT,
+    removed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Fill the RCBT contacts the first time the database is created.
