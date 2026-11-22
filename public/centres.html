@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blood centres · BloodLink Rwanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap">
+    <div class="page-head" data-i18n-title="nav_centres">
+      <h1 data-i18n="centres_title">Official blood centres</h1>
+      <p data-i18n="centres_intro">Rwanda's blood supply is run by RBC through the National Centre for Blood Transfusion and its regional centres (RCBT). Hospitals request blood from them, and you can call them for help.</p>
+    </div>
+
+    <div class="field narrow-field">
+      <label for="district" data-i18n="centres_pick">Show the nearest centre for my district</label>
+      <select id="district">
+        <option value="" data-i18n="search_district_pick">Choose a district</option>
+      </select>
+    </div>
+
+    <ul id="centre-list" class="centre-list"></ul>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/forms.js"></script>
+  <script src="/js/centres-render.js"></script>
+  <script>
+    (async function () {
+      const select = document.getElementById('district');
+      const list = document.getElementById('centre-list');
+      let centres = [];
+
+      await window.forms.loadMeta();
+      window.forms.renderDistricts(select);
+
+      async function load() {
+        const { data } = await window.api('/api/rcbt?district=' + encodeURIComponent(select.value));
+        centres = data.centres || [];
+        window.renderCentres(list, centres);
+      }
+
+      select.addEventListener('change', load);
+      document.addEventListener('langchange', () => window.renderCentres(list, centres));
+      load();
+    })();
+  </script>
+</body>
+</html>

@@ -19,11 +19,15 @@ const updateDonor = db.prepare(`
    WHERE phone = @phone
 `);
 
+// The donor just proved their number works, so old "unreachable" reports are cleared.
+const clearReports = db.prepare('DELETE FROM reports WHERE donor_id = ?');
+
 // FR 1.3: create a new record, or update the existing one for this phone.
 const registerDonor = db.transaction((donor) => {
   const existing = findByPhone.get(donor.phone);
   if (existing) {
     updateDonor.run(donor);
+    clearReports.run(existing.id);
     return { status: 'updated', id: existing.id };
   }
   const info = insertDonor.run(donor);

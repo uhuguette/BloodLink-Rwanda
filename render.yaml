@@ -1,0 +1,22 @@
+# One-click deploy on Render (free plan): New + > Blueprint > pick this repository.
+services:
+  - type: web
+    name: bloodlink-rwanda
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SEED_DEMO
+        value: "true"

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin login · BloodLink Rwanda</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap narrow login-wrap">
+    <div class="page-head" data-i18n-title="login_title">
+      <h1 data-i18n="login_title">Admin login</h1>
+      <p data-i18n="login_intro">For BloodLink administrators only.</p>
+    </div>
+
+    <div id="login-message" class="alert hidden" role="alert"></div>
+
+    <form id="login-form" class="card" novalidate>
+      <div class="field">
+        <label for="username" data-i18n="login_username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password" data-i18n="login_password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required>
+      </div>
+      <button class="btn block" type="submit" data-i18n="login_submit">Log in</button>
+    </form>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById('login-form');
+      const message = document.getElementById('login-message');
+      const params = new URLSearchParams(location.search);
+
+      function show(key, type) {
+        message.className = 'alert ' + (type || 'error');
+        message.dataset.i18n = key;
+        message.textContent = window.i18n.t(key);
+      }
+
+      if (params.has('denied')) show('login_denied');
+      if (params.has('expired')) show('login_expired', 'warn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const button = form.querySelector('button');
+        button.disabled = true;
+        const { ok, status } = await window.api('/api/admin/login', {
+          method: 'POST',
+          body: { username: form.username.value.trim(), password: form.password.value },
+        });
+        button.disabled = false;
+        if (ok) { location.href = '/admin'; return; }
+        form.password.value = '';
+        show(status === 429 ? 'login_locked' : 'login_failed');
+      });
+    })();
+  </script>
+</body>
+</html>

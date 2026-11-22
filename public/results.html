@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Donors found · BloodLink Rwanda</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap">
+    <div class="page-head results-head" data-i18n-title="res_title">
+      <div>
+        <h1 id="results-title" data-i18n="res_title">Donors</h1>
+        <p id="results-summary" aria-live="polite"></p>
+      </div>
+      <a class="btn ghost small" id="change-search" href="/" data-i18n="res_change">Change search</a>
+    </div>
+
+    <div id="results-loading" class="loading" data-i18n="res_loading">Searching...</div>
+    <div id="results-message" class="alert hidden" role="status"></div>
+
+    <ul id="donor-list" class="donor-list" aria-label="Matching donors"></ul>
+
+    <section id="no-results" class="hidden">
+      <div class="empty-state">
+        <div class="empty-drop" aria-hidden="true"></div>
+        <h2 data-i18n="res_none_title">No donor found yet</h2>
+        <p data-i18n="res_none_text">Nobody with this blood type is registered in this district right now. Please contact an official blood centre, they can help today.</p>
+      </div>
+      <ul id="centre-list" class="centre-list"></ul>
+    </section>
+
+    <p class="muted small-print" data-i18n="res_privacy">Only first names are shown. Please call donors respectfully and only for a real need.</p>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/centres-render.js"></script>
+  <script src="/js/results.js"></script>
+</body>
+</html>

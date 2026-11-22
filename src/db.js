@@ -26,6 +26,43 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_donors_search ON donors (blood_type, district, status);
+
+  CREATE TABLE IF NOT EXISTS rcbt_centres (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    name     TEXT NOT NULL,
+    city     TEXT NOT NULL,
+    province TEXT NOT NULL,
+    phone    TEXT NOT NULL
+  );
+
+  -- A seeker reports a number that does not work. Two reports hide the donor.
+  CREATE TABLE IF NOT EXISTS reports (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    donor_id    INTEGER NOT NULL REFERENCES donors (id) ON DELETE CASCADE,
+    reported_at TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS admins (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    username      TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL
+  );
+
+  -- NFR 3: every removal is kept, even after the donor row is gone.
+  CREATE TABLE IF NOT EXISTS removal_log (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    admin_username TEXT    NOT NULL,
+    donor_id       INTEGER NOT NULL,
+    donor_summary  TEXT    NOT NULL,
+    reason         TEXT,
+    removed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+  );
 `);
+
+// Fill the RCBT contacts the first time the database is created.
+if (db.prepare('SELECT COUNT(*) AS n FROM rcbt_centres').get().n === 0) {
+  const insert = db.prepare('INSERT INTO rcbt_centres (name, city, province, phone) VALUES (@name, @city, @province, @phone)');
+  db.transaction((rows) => rows.forEach((r) => insert.run(r)))(require('./rcbtData'));
+}
 
 module.exports = db;
