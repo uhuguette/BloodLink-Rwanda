@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Become a donor · BloodLink Rwanda</title>
+  <meta name="description" content="Register as a voluntary blood donor in Rwanda.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap narrow">
+    <div class="page-head" data-i18n-title="nav_register">
+      <h1 data-i18n="reg_title">Become a blood donor</h1>
+      <p data-i18n="reg_intro"></p>
+    </div>
+
+    <div id="reg-message" class="alert hidden" role="status" aria-live="polite"></div>
+
+    <form id="register-form" class="card" novalidate>
+      <div class="field" data-field="fullName">
+        <label for="fullName" data-i18n="reg_name">Full name</label>
+        <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="80" required>
+        <span class="hint" data-i18n="reg_name_hint"></span>
+        <div class="error-text" aria-live="polite"></div>
+      </div>
+
+      <fieldset class="field fieldset" data-field="bloodType">
+        <legend class="label" data-i18n="reg_blood">Your blood type</legend>
+        <div class="drops" id="blood-drops"></div>
+        <div class="error-text" aria-live="polite"></div>
+      </fieldset>
+
+      <div class="field" data-field="district">
+        <label for="district" data-i18n="reg_district">District</label>
+        <select id="district" name="district" required>
+          <option value="" data-i18n="reg_district_pick">Choose your district</option>
+        </select>
+        <div class="error-text" aria-live="polite"></div>
+      </div>
+
+      <div class="field" data-field="phone">
+        <label for="phone" data-i18n="reg_phone">Phone number</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" required>
+        <span class="hint" data-i18n="reg_phone_hint"></span>
+        <div class="error-text" aria-live="polite"></div>
+      </div>
+
+      <div class="field" data-field="consent">
+        <label class="check">
+          <input id="consent" name="consent" type="checkbox" required>
+          <span data-i18n="reg_consent"></span>
+        </label>
+        <div class="error-text" aria-live="polite"></div>
+      </div>
+
+      <button class="btn block" type="submit" data-i18n="reg_submit">Register as a donor</button>
+      <p class="hint center mt" data-i18n="reg_again"></p>
+    </form>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/forms.js"></script>
+  <script src="/js/register.js"></script>
+</body>
+</html>
