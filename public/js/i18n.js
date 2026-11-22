@@ -124,6 +124,23 @@ window.I18N = {
 
     lang_switch: 'Kinyarwanda',
     lang_switch_label: 'Hindura ururimi ujye mu Kinyarwanda',
+
+    help_title: 'Help and questions',
+    help_intro: 'Short answers on how BloodLink works.',
+    help_q1: 'How do I register as a donor?',
+    help_a1: 'Open "Become a donor". Type your name, tap your blood type, choose your district, type your phone number, tick the consent box and press Register. That is all.',
+    help_q2: 'How do I find a donor?',
+    help_a2: 'On the home page tap the blood type you need, choose the district and press Search. Press the phone number on a donor card to call them.',
+    help_q3: 'What if no donor is found?',
+    help_a3: 'We show you the official blood centres (RCBT), with the one nearest to your district first. You can also call the RBC hotline 114. In a medical emergency call 912.',
+    help_q4: 'Who can see my phone number?',
+    help_a4: 'Only people who search for your blood type in your district. They see your first name, not your full name. Nobody can download the donor list.',
+    help_q5: 'Why register again every 3 months?',
+    help_a5: 'So seekers only call donors who can still give. If you do not reconfirm within 90 days you are hidden from search. Register again with the same phone number and you are visible again.',
+    help_q6: 'What does "Number not working?" do?',
+    help_a6: 'If a number is wrong or switched off, press it. After two reports the donor is hidden and an admin checks the details.',
+    help_q7: 'Can anyone give blood?',
+    help_a7: 'The blood centre always checks that it is safe for you to give blood before taking it. If you are not sure, ask your nearest RCBT or call 114.',
   },
 };
 
@@ -251,6 +268,23 @@ window.I18N.rw = {
 
   lang_switch: 'English',
   lang_switch_label: 'Change the language to English',
+
+  help_title: "Ubufasha n'ibibazo",
+  help_intro: 'Ibisubizo bigufi ku buryo BloodLink ikora.',
+  help_q1: "Niyandikisha nte nk'utanga amaraso?",
+  help_a1: 'Fungura "Tanga amaraso". Andika izina ryawe, kanda ku bwoko bw\'amaraso yawe, hitamo akarere, andika nimero ya telefoni, kanda ku kazu ko kwemeza hanyuma ukande Iyandikishe. Ni ibyo gusa.',
+  help_q2: 'Nabona nte utanga amaraso?',
+  help_a2: "Ku rupapuro rw'ibanze kanda ku bwoko bw'amaraso ukeneye, hitamo akarere hanyuma ukande Shakisha. Kanda kuri nimero ya telefoni kugira ngo umuhamagare.",
+  help_q3: 'Bigenda bite iyo nta utanga amaraso ubonetse?',
+  help_a3: "Tukwereka ibigo by'amaraso byemewe (RCBT), icyegereye akarere kawe kikaza mbere. Ushobora no guhamagara umurongo wa RBC 114. Mu gihe cy'ubutabazi bwihutirwa hamagara 912.",
+  help_q4: 'Ni nde ushobora kubona nimero yanjye?',
+  help_a4: "Ni abashaka ubwoko bw'amaraso yawe mu karere kawe gusa. Babona izina ryawe rya mbere, si amazina yawe yombi. Nta muntu ushobora gukuramo urutonde rw'abatanga amaraso.",
+  help_q5: 'Kuki ngomba kongera kwiyandikisha buri mezi 3?',
+  help_a5: "Kugira ngo abashaka amaraso bahamagare abagishobora gutanga gusa. Niba utongeye kwemeza mu minsi 90, urahishwa mu ishakisha. Ongera wiyandikishe ukoresheje nimero imwe, wongere ugaragare.",
+  help_q6: 'Akabuto "Nimero ntikora?" gakora iki?',
+  help_a6: "Niba nimero itari yo cyangwa itariho, kanda kuri ako kabuto. Nyuma y'amatangazo abiri, uwo muntu arahishwa kandi umuyobozi akagenzura amakuru ye.",
+  help_q7: 'Umuntu wese ashobora gutanga amaraso?',
+  help_a7: "Ikigo cy'amaraso buri gihe kibanza kugenzura ko nta kibazo wagira mbere yo kugutwara amaraso. Niba utabizi neza, baza RCBT ikwegereye cyangwa uhamagare 114.",
 };
 
 (function () {
