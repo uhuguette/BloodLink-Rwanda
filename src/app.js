@@ -12,6 +12,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/meta', require('./routes/meta'));
 app.use('/api/donors', require('./routes/donors'));
+app.use('/api', require('./routes/search'));
 
 app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 
