@@ -37,5 +37,24 @@
       </div>`;
   }
 
+  // NFR 11: one button on every page switches English <-> Kinyarwanda.
+  const slot = document.getElementById('lang-slot');
+  if (slot) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'lang-btn';
+    button.id = 'lang-toggle';
+    const label = () => {
+      button.textContent = window.i18n.t('lang_switch');
+      button.setAttribute('aria-label', window.i18n.t('lang_switch_label'));
+    };
+    button.addEventListener('click', () => {
+      window.i18n.setLang(window.i18n.getLang() === 'en' ? 'rw' : 'en');
+      label();
+    });
+    slot.replaceWith(button);
+    label();
+  }
+
   window.i18n.apply();
 })();
