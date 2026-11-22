@@ -2,6 +2,10 @@ const path = require('path');
 const express = require('express');
 
 const { forceHttps, securityHeaders, sessions } = require('./middleware/security');
+const requireAdmin = require('./middleware/requireAdmin');
+const { ensureAdmin } = require('./services/adminService');
+
+ensureAdmin();
 
 const app = express();
 
@@ -18,7 +22,14 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/meta', require('./routes/meta'));
 app.use('/api/donors', require('./routes/donors'));
+app.use('/api/admin', require('./routes/admin'));
 app.use('/api', require('./routes/search'));
+
+// The admin page lives outside /public so it can only be opened after login (NFR 1).
+app.get(['/admin', '/admin.html'], requireAdmin, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, '..', 'views', 'admin.html'));
+});
 
 app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 
