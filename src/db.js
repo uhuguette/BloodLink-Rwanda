@@ -26,6 +26,20 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_donors_search ON donors (blood_type, district, status);
+
+  CREATE TABLE IF NOT EXISTS rcbt_centres (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    name     TEXT NOT NULL,
+    city     TEXT NOT NULL,
+    province TEXT NOT NULL,
+    phone    TEXT NOT NULL
+  );
 `);
+
+// Fill the RCBT contacts the first time the database is created.
+if (db.prepare('SELECT COUNT(*) AS n FROM rcbt_centres').get().n === 0) {
+  const insert = db.prepare('INSERT INTO rcbt_centres (name, city, province, phone) VALUES (@name, @city, @province, @phone)');
+  db.transaction((rows) => rows.forEach((r) => insert.run(r)))(require('./rcbtData'));
+}
 
 module.exports = db;
