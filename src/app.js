@@ -10,6 +10,9 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true, service: 'bloodlink-rwanda' });
 });
 
+app.use('/api/meta', require('./routes/meta'));
+app.use('/api/donors', require('./routes/donors'));
+
 app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 
 // Unknown API routes return JSON, everything else gets the 404 page.

@@ -1,0 +1,189 @@
+/* BloodLink Rwanda
+   Visual language inspired by Imigongo, the geometric cow-dung art of
+   eastern Rwanda: black, clay and cream zigzags, with blood red as the accent. */
+
+:root {
+  --blood: #a4161a;
+  --blood-deep: #660708;
+  --blood-soft: #fbe9e7;
+  --ink: #1b1212;
+  --clay: #b5543a;
+  --cream: #f6efe6;
+  --paper: #fffbf5;
+  --muted: #6b5e57;
+  --line: #e4d6c6;
+  --ok: #2d6a4f;
+  --ok-soft: #e3f1ea;
+  --warn: #9a6700;
+  --warn-soft: #fff4d6;
+  --radius: 14px;
+  --shadow: 0 1px 0 var(--line), 0 10px 30px -18px rgba(27, 18, 18, 0.45);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Imigongo band: zigzag of ink, clay and cream triangles */
+  --imigongo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16' viewBox='0 0 32 16'%3E%3Crect width='32' height='16' fill='%231b1212'/%3E%3Cpath d='M0 16 L8 4 L16 16 L24 4 L32 16Z' fill='%23f6efe6'/%3E%3Cpath d='M4 16 L8 10 L12 16Z M20 16 L24 10 L28 16Z' fill='%23b5543a'/%3E%3C/svg%3E");
+  --imigongo-diamonds: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 0 L40 20 L20 40 L0 20Z' fill='none' stroke='%23660708' stroke-width='3' opacity='.35'/%3E%3Cpath d='M20 10 L30 20 L20 30 L10 20Z' fill='none' stroke='%23660708' stroke-width='3' opacity='.35'/%3E%3C/svg%3E");
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+img, svg { max-width: 100%; }
+
+a { color: var(--blood); }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: clamp(2rem, 6vw, 3.4rem); font-weight: 700; }
+h2 { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 600; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+
+.wrap { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+.narrow { max-width: 640px; }
+.center { text-align: center; }
+.muted { color: var(--muted); }
+.hidden { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+
+/* ---------- Header ---------- */
+.site-header { background: var(--ink); color: var(--cream); }
+.site-header .wrap {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--cream); text-decoration: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.25rem;
+}
+.brand-drop {
+  width: 26px; height: 26px; background: var(--blood);
+  border-radius: 50% 0 50% 50%; transform: rotate(-45deg);
+  box-shadow: inset -4px 4px 0 rgba(255, 255, 255, 0.18);
+}
+.brand small { display: block; font-family: var(--font-body); font-weight: 400; font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.08em; text-transform: uppercase; }
+.nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.nav a {
+  color: var(--cream); text-decoration: none; font-size: 0.95rem;
+  padding: 8px 10px; border-radius: 999px;
+}
+.nav a:hover, .nav a[aria-current='page'] { background: rgba(246, 239, 230, 0.12); }
+.lang-btn {
+  font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  background: var(--cream); color: var(--ink); border: 0;
+  padding: 8px 14px; border-radius: 999px; min-height: 40px;
+}
+.lang-btn:hover { background: #fff; }
+.band { height: 16px; background: var(--imigongo) repeat-x; background-size: 32px 16px; }
+.band.flip { transform: scaleY(-1); }
+
+/* ---------- Buttons & forms ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: inherit; font-weight: 700; font-size: 1.05rem; text-decoration: none; cursor: pointer;
+  background: var(--blood); color: #fff; border: 2px solid var(--blood);
+  padding: 14px 24px; border-radius: 999px; min-height: 52px;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn:hover { background: var(--blood-deep); border-color: var(--blood-deep); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+.btn.block { width: 100%; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn.ghost:hover { background: var(--ink); color: var(--cream); }
+.btn.small { font-size: 0.9rem; padding: 8px 14px; min-height: 40px; }
+.btn.ok { background: var(--ok); border-color: var(--ok); }
+
+.field { margin-bottom: 20px; }
+.field > label, .field > .label {
+  display: block; font-weight: 700; margin-bottom: 8px;
+}
+.hint { display: block; font-size: 0.88rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+input[type='text'], input[type='tel'], input[type='password'], select {
+  width: 100%; font: inherit; color: var(--ink);
+  background: #fff; border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; min-height: 52px;
+}
+input:focus, select:focus, .btn:focus-visible, .lang-btn:focus-visible {
+  outline: 3px solid rgba(164, 22, 26, 0.35); outline-offset: 2px; border-color: var(--blood);
+}
+.field.has-error input, .field.has-error select { border-color: var(--blood); background: var(--blood-soft); }
+.error-text { color: var(--blood); font-size: 0.9rem; font-weight: 600; margin-top: 6px; }
+
+.check {
+  display: flex; gap: 12px; align-items: flex-start; cursor: pointer;
+  background: var(--cream); border: 2px solid var(--line); border-radius: 12px; padding: 14px;
+}
+.check input { width: 22px; height: 22px; accent-color: var(--blood); flex: none; margin-top: 2px; }
+
+/* Blood type picker: each option is a blood drop */
+.drops {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px 12px;
+  justify-items: center; padding: 10px 0 4px; border: 0; margin: 0;
+}
+.drop { position: relative; }
+.drop input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.drop span {
+  display: grid; place-items: center;
+  width: 62px; height: 62px; cursor: pointer;
+  border-radius: 50% 0 50% 50%; transform: rotate(-45deg);
+  background: #fff; border: 2px solid var(--line);
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.drop b {
+  transform: rotate(45deg); font-family: var(--font-display);
+  font-size: 1.2rem; color: var(--blood-deep);
+}
+.drop input:hover + span { border-color: var(--blood); }
+.drop input:focus-visible + span { outline: 3px solid rgba(164, 22, 26, 0.35); outline-offset: 3px; }
+.drop input:checked + span {
+  background: var(--blood); border-color: var(--blood-deep);
+  transform: rotate(-45deg) scale(1.08);
+  box-shadow: inset -6px 6px 0 rgba(255, 255, 255, 0.15);
+}
+.drop input:checked + span b { color: #fff; }
+
+/* ---------- Cards & panels ---------- */
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 24px;
+}
+.alert { border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; font-weight: 600; }
+.alert.ok { background: var(--ok-soft); color: var(--ok); }
+.alert.error { background: var(--blood-soft); color: var(--blood-deep); }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+
+.page-head { padding: 40px 0 24px; }
+.page-head p { color: var(--muted); max-width: 56ch; margin: 0; }
+main { padding-bottom: 56px; }
+
+/* ---------- Footer ---------- */
+.site-footer { background: var(--ink); color: var(--cream); margin-top: 40px; }
+.site-footer .wrap { padding-top: 24px; padding-bottom: 28px; font-size: 0.9rem; }
+.site-footer a { color: var(--cream); }
+.site-footer .emergency { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 6px; }
+
+.fieldset { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+.fieldset legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.mt { margin-top: 14px; }
