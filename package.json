@@ -1,0 +1,17 @@
+{
+  "name": "bloodlink-rwanda",
+  "version": "1.0.0",
+  "description": "BloodLink Rwanda - find a willing blood donor by blood type and district, fast.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Uwase Huguette",
+  "license": "MIT"
+}
