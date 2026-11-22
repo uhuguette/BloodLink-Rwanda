@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find a blood donor · BloodLink Rwanda</title>
+  <meta name="description" content="Search voluntary blood donors in Rwanda by blood type and district, and call them directly.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy" data-i18n-title="nav_search">
+          <p class="eyebrow" data-i18n="home_eyebrow">Emergency donor search</p>
+          <h1 data-i18n="home_title">Find a blood donor near you, now.</h1>
+          <p class="lead" data-i18n="home_lead">Pick the blood type and the district. Call a willing donor directly. No account needed.</p>
+          <ol class="steps" aria-label="How it works">
+            <li><span>1</span><b data-i18n="step_1">Choose blood type</b></li>
+            <li><span>2</span><b data-i18n="step_2">Choose district</b></li>
+            <li><span>3</span><b data-i18n="step_3">Call a donor</b></li>
+          </ol>
+        </div>
+
+        <form id="search-form" class="card search-card" action="/results" method="get" novalidate>
+          <fieldset class="fieldset" data-field="bloodType">
+            <legend data-i18n="search_blood">Blood type needed</legend>
+            <div class="drops" id="blood-drops"></div>
+            <div class="error-text" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="field" data-field="district">
+            <label for="district" data-i18n="search_district">District</label>
+            <select id="district" name="district" required>
+              <option value="" data-i18n="search_district_pick">Choose a district</option>
+            </select>
+            <div class="error-text" aria-live="polite"></div>
+          </div>
+
+          <button class="btn block" type="submit">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            <span data-i18n="search_button">Search donors</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="wrap split">
+      <div class="panel-pattern">
+        <h2 data-i18n="home_donor_title">Can you give blood?</h2>
+        <p data-i18n="home_donor_text">Join the list in under two minutes. A family may call you on the day they need it most.</p>
+        <a class="btn ghost" href="/register" data-i18n="nav_register">Become a donor</a>
+      </div>
+      <div class="panel-plain">
+        <h2 data-i18n="home_rbc_title">Works with RBC, not instead of it</h2>
+        <p data-i18n="home_rbc_text">BloodLink connects people directly. If no donor matches, we show you the nearest official blood centre (RCBT).</p>
+        <a class="link-arrow" href="/centres" data-i18n="home_rbc_link">See blood centres</a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/forms.js"></script>
+  <script src="/js/home.js"></script>
+</body>
+</html>
