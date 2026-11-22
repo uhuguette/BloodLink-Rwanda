@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · BloodLink Rwanda</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap">
+    <div class="page-head admin-head" data-i18n-title="admin_title">
+      <div>
+        <h1 data-i18n="admin_title">Donor review</h1>
+        <p><span data-i18n="admin_signed_in">Signed in as</span> <b id="admin-name"></b></p>
+      </div>
+      <button class="btn ghost small" id="logout" type="button" data-i18n="admin_logout">Log out</button>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><b id="stat-total">-</b><span data-i18n="admin_stat_total">Donors</span></div>
+      <div class="stat"><b id="stat-active">-</b><span data-i18n="admin_stat_active">Visible in search</span></div>
+      <div class="stat flag"><b id="stat-flagged">-</b><span data-i18n="admin_stat_flagged">Flagged for review</span></div>
+    </div>
+
+    <div id="admin-message" class="alert hidden" role="status"></div>
+
+    <div class="toolbar">
+      <label class="check inline"><input type="checkbox" id="only-flagged" checked> <span data-i18n="admin_only_flagged">Show flagged donors only</span></label>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table" id="donor-table">
+        <thead>
+          <tr>
+            <th data-i18n="admin_col_name">Name</th>
+            <th data-i18n="admin_col_type">Type</th>
+            <th data-i18n="admin_col_district">District</th>
+            <th data-i18n="admin_col_phone">Phone</th>
+            <th data-i18n="admin_col_confirmed">Last confirmed</th>
+            <th data-i18n="admin_col_status">Status</th>
+            <th data-i18n="admin_col_actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title" data-i18n="admin_log_title">Removal log</h2>
+    <div class="table-wrap">
+      <table class="table" id="log-table">
+        <thead>
+          <tr>
+            <th data-i18n="admin_log_when">Date and time</th>
+            <th data-i18n="admin_log_admin">Admin</th>
+            <th data-i18n="admin_log_donor">Donor ID</th>
+            <th data-i18n="admin_log_details">Details</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

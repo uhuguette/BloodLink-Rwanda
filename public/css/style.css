@@ -287,3 +287,41 @@ main { padding-bottom: 56px; }
   .drop span { width: 54px; height: 54px; }
   .nav a { padding: 6px 8px; font-size: 0.88rem; }
 }
+
+/* ---------- Admin ---------- */
+.login-wrap { max-width: 460px; }
+.admin-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.admin-head p { margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+.stat {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.stat b { display: block; font-family: var(--font-display); font-size: 2rem; line-height: 1.1; }
+.stat span { color: var(--muted); font-size: 0.9rem; }
+.stat.flag { background: var(--ink) var(--imigongo) repeat-x bottom; background-size: 32px 16px; color: var(--cream); padding-bottom: 26px; }
+.stat.flag span { color: var(--cream); opacity: 0.85; }
+.toolbar { margin-bottom: 12px; }
+.check.inline { display: inline-flex; padding: 10px 14px; font-size: 0.95rem; }
+.table-wrap {
+  width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.table { width: 100%; border-collapse: collapse; font-size: 0.93rem; min-width: 760px; }
+.table th, .table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table th { background: var(--cream); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.table tr:last-child td { border-bottom: 0; }
+.table tr.is-flagged td { background: #fff8f6; }
+.pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+.pill-ok { background: var(--ok-soft); color: var(--ok); }
+.pill-flag { background: var(--blood-soft); color: var(--blood-deep); }
+.flag-reason { display: block; color: var(--muted); margin-top: 4px; }
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.section-title { margin-top: 36px; }
+.donor-actions .report { border-color: var(--line); color: var(--muted); }
+.donor-actions .report:hover:not(:disabled) { background: var(--cream); color: var(--ink); border-color: var(--ink); }
+
+@media (max-width: 560px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat.flag { grid-column: 1 / -1; }
+}
