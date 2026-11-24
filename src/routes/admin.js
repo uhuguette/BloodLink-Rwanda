@@ -1,6 +1,15 @@
 const express = require('express');
 const requireAdmin = require('../middleware/requireAdmin');
-const { checkLogin, listDonors, removeDonor, keepDonor, removalLog } = require('../services/adminService');
+const {
+  checkLogin,
+  createAdmin,
+  validateAdminInput,
+  adminExists,
+  listDonors,
+  removeDonor,
+  keepDonor,
+  removalLog,
+} = require('../services/adminService');
 
 const router = express.Router();
 
@@ -21,6 +30,50 @@ function recordFailure(ip) {
   entry.count += 1;
   attempts.set(ip, entry);
 }
+
+// GET /api/admin/setup — tells the login and sign-up pages whether the site
+// still needs its very first admin account.
+router.get('/setup', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ needsSetup: !adminExists() });
+});
+
+// POST /api/admin/signup — FR 5.0.
+// The first account can be created by anyone, because the site is unusable for
+// an administrator until it exists. Once one admin exists the page is closed:
+// only a signed-in admin can add another account.
+router.post('/signup', (req, res) => {
+  const first = !adminExists();
+  if (!first && !(req.session && req.session.admin)) {
+    return res.status(403).json({ error: 'signup_closed' });
+  }
+  if (first && tooManyTries(req.ip)) return res.status(429).json({ error: 'too_many_tries' });
+
+  const { username, password, confirm } = req.body || {};
+  const check = validateAdminInput(username, password, confirm);
+  if (!check.ok) {
+    if (first) recordFailure(req.ip);
+    return res.status(400).json({ error: check.error });
+  }
+
+  let admin;
+  try {
+    admin = createAdmin(check.value.username, String(password));
+  } catch (e) {
+    if (e.message === 'taken') return res.status(409).json({ error: 'signup_err_taken' });
+    throw e;
+  }
+
+  attempts.delete(req.ip);
+
+  // The first admin is signed in straight away so they land on the dashboard.
+  if (!first) return res.status(201).json({ ok: true, username: admin.username, signedIn: false });
+  req.session.regenerate((err) => {
+    if (err) return res.status(500).json({ error: 'session' });
+    req.session.admin = admin;
+    res.status(201).json({ ok: true, username: admin.username, signedIn: true });
+  });
+});
 
 // POST /api/admin/login
 router.post('/login', (req, res) => {
