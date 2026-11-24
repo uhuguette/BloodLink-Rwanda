@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create admin account · BloodLink Rwanda</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="wrap narrow login-wrap">
+    <div class="page-head" data-i18n-title="signup_title">
+      <h1 data-i18n="signup_title">Create the admin account</h1>
+      <p id="signup-intro" data-i18n="signup_intro">Choose the username and password you will use to review donors.</p>
+    </div>
+
+    <div id="signup-message" class="alert hidden" role="alert"></div>
+
+    <form id="signup-form" class="card hidden" novalidate>
+      <div class="field">
+        <label for="username" data-i18n="signup_username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" minlength="3" maxlength="32" required>
+        <p class="hint" data-i18n="signup_username_hint">3 to 32 characters: letters, numbers, dot, dash or underscore.</p>
+      </div>
+      <div class="field">
+        <label for="password" data-i18n="signup_password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+        <p class="hint" data-i18n="signup_password_hint">At least 8 characters. It is stored as a bcrypt hash, never as plain text.</p>
+      </div>
+      <div class="field">
+        <label for="confirm" data-i18n="signup_confirm">Repeat the password</label>
+        <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+      </div>
+      <button class="btn block" type="submit" data-i18n="signup_submit">Create admin account</button>
+      <p class="hint center mt"><a href="/login" data-i18n="signup_have_account">Already have an account? Log in</a></p>
+    </form>
+
+    <p id="signup-login-link" class="center hidden"><a class="btn" href="/login" data-i18n="login_submit">Log in</a></p>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/signup.js"></script>
+</body>
+</html>
