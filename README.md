@@ -23,7 +23,7 @@ It works **alongside** RBC, not instead of it.
 | FR 2 | Search by blood type and district, three actions only. Hidden or outdated donors are never shown. |
 | FR 3 | Up to 20 results with first name, blood type, district, phone (tap to call) and last confirmed date. "Number not working?" report button on each result. |
 | FR 3.2 / FR 4 | No match: clear message and RCBT contacts, nearest centre first. Separate Blood Centres page. |
-| FR 5 | Admin login, full donor list with flagged donors marked, remove or keep, removal log. |
+| FR 5 | Admin sign-up (the first administrator creates their own account), admin login, full donor list with flagged donors marked, remove or keep, removal log. |
 | Trust rules | Donors not reconfirmed in 90 days, or reported by 2 different visitors, are hidden until reviewed. |
 | NFR 1-3 | Admin pages blocked without login ("access denied"), bcrypt-hashed passwords (8+ chars), 15-minute session timeout, every removal logged with admin, donor ID and time. |
 | NFR 4-5 | Only the data needed is stored, only first names are shown, max 20 results, no export. |
@@ -94,20 +94,27 @@ npm start
 ```
 
 Open **http://localhost:3000** in your browser. On the first start the app creates `data/bloodlink.db`,
-adds the official blood centres and **30 sample donors**, and creates the admin account.
+adds the official blood centres and **30 sample donors**.
 
 For development, `npm run dev` restarts the server every time you save a file.
 
-### 5. Log in as admin
+### 5. Create your admin account, then log in
 
-Go to **http://localhost:3000/login** (or click **Admin** in the footer).
+There is **no default password**. The first administrator signs up with credentials of their own choosing.
 
-| | Local default |
-|---|---|
-| Username | `admin` |
-| Password | `BloodLink2026!` |
+1. Go to **http://localhost:3000/signup** (the login page also links to it while no admin exists).
+2. Pick a username (3-32 characters: letters, numbers, `.`, `-`, `_`) and a password of at least 8 characters.
+3. Press **Create admin account**. You are signed in straight away and land on `/admin`.
 
-These defaults are only used when `ADMIN_PASSWORD` is not set. Always set your own password on a live site.
+After that the sign-up page is closed: it only answers a visitor who is already signed in as an admin, so
+an existing admin can add a colleague from the **Add administrator** button on the dashboard. Everyone else
+is sent to **http://localhost:3000/login** (or the **Admin login** button in the footer).
+
+Passwords are stored as bcrypt hashes with 12 rounds and are never written to the database in plain text.
+
+If you would rather have the account created for you at start-up (useful for an automated deploy), set
+**both** `ADMIN_USERNAME` and `ADMIN_PASSWORD` before the first run. When either is missing, nothing is
+created and the sign-up page stays open for the first admin.
 
 ### 6. Try it out
 
@@ -118,6 +125,9 @@ These defaults are only used when `ADMIN_PASSWORD` is not set. Always set your o
 | Register with phone `12345` or without ticking consent | A clear error, nothing saved |
 | Register again with the same phone number | "Welcome back", record updated instead of duplicated |
 | Open `/admin` without logging in | Sent to the login page with "Access denied" |
+| Open `/signup` before any admin exists | The sign-up form, which creates your admin account |
+| Open `/signup` again, logged out | "An admin account already exists. Please log in." |
+| Sign up with a 5-letter password, or two passwords that differ | A clear error, no account created |
 | Log in as admin | Gilbert and Nadine are flagged (not reconfirmed in 90 days) |
 | Remove a donor | It disappears and a line is added to the removal log |
 | Press **Kinyarwanda** in the header | Every label on the page changes language |
@@ -152,8 +162,8 @@ All are optional locally. See `.env.example`.
 | `PORT` | `3000` | Port the server listens on |
 | `NODE_ENV` | - | Set to `production` on the live site (turns on HTTPS redirect and secure cookies) |
 | `SESSION_SECRET` | random | Signs the admin session cookie |
-| `ADMIN_USERNAME` | `admin` | First admin, created when no admin exists |
-| `ADMIN_PASSWORD` | `BloodLink2026!` | First admin password (8+ characters) |
+| `ADMIN_USERNAME` | - | Optional. With `ADMIN_PASSWORD`, creates the first admin at start-up instead of on `/signup` |
+| `ADMIN_PASSWORD` | - | Optional. First admin password (8+ characters). No default password exists |
 | `SEED_DEMO` | `true` | Load the 30 sample donors when the donor table is empty |
 | `DB_PATH` | `data/bloodlink.db` | Location of the SQLite file |
 
@@ -162,9 +172,12 @@ All are optional locally. See `.env.example`.
 1. Push this repository to GitHub (public).
 2. Sign in at [render.com](https://render.com) with GitHub.
 3. Click **New +** > **Blueprint**, choose this repository. Render reads `render.yaml`.
-4. When asked, type an `ADMIN_PASSWORD` (at least 8 characters). Click **Apply**.
+4. Leave `ADMIN_USERNAME` and `ADMIN_PASSWORD` empty and click **Apply**.
 5. Wait for the build to finish and open the `https://bloodlink-rwanda-xxxx.onrender.com` link.
-6. Put that link at the top of this README.
+6. Go straight to `https://your-url.onrender.com/signup` and create your admin account. Do this as soon as
+   the first deploy is live: the sign-up page is open to anyone until the first account exists, and it closes
+   itself the moment you create it.
+7. Put that link at the top of this README.
 
 **Without the blueprint:** New + > Web Service > pick the repo > Build command `npm ci` >
 Start command `npm start` > add the environment variables above with `NODE_ENV=production`.
@@ -183,6 +196,8 @@ to it, or move to a hosted database.
 | `POST` | `/api/donors/:id/report` | Report a number that does not work |
 | `GET` | `/api/search?bloodType=O-&district=Gasabo` | Up to 20 donors, or RCBT contacts if none |
 | `GET` | `/api/rcbt?district=Huye` | Blood centres, nearest first |
+| `GET` | `/api/admin/setup` | Whether the site still needs its first admin |
+| `POST` | `/api/admin/signup` | Create the first admin, or add one while signed in |
 | `POST` | `/api/admin/login` / `logout` | Admin session |
 | `GET` | `/api/admin/donors` | All donors with flags (admin only) |
 | `DELETE` | `/api/admin/donors/:id` | Remove a donor and log it (admin only) |
@@ -195,7 +210,10 @@ to it, or move to a hosted database.
 - The Kinyarwanda translations should be reviewed by two native speakers (planned in Sprint 4).
 - Blood types are self-reported. There is no medical verification in this MVP.
 - Before a real public launch, BloodLink must comply with Rwanda's data protection law (Law No. 058/2021), because it stores phone numbers.
-- The free hosting plan does not keep data between restarts (see above).
+- The free hosting plan does not keep data between restarts (see above). After a restart with no persistent
+  disk the admins table is empty again, so `/signup` reopens and the account has to be created once more.
+- There is no "forgot password" flow yet. A locked-out admin is recovered by another admin, or by deleting the
+  row from the `admins` table.
 
 ## Development process
 
