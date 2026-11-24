@@ -8,7 +8,6 @@ window.I18N = {
     nav_centres: 'Blood centres',
     nav_help: 'Help',
     footer_emergency: 'In an emergency call 912 (ambulance) or the RBC hotline 114.',
-    footer_note: 'BloodLink Rwanda works alongside RBC / NCBT and does not replace it.',
 
     reg_title: 'Become a blood donor',
     reg_intro: 'Leave your details so a family in need can call you. It takes less than two minutes.',
@@ -44,7 +43,7 @@ window.I18N = {
     search_button: 'Search donors',
     home_donor_title: 'Can you give blood?',
     home_donor_text: 'Join the list in under two minutes. A family may call you on the day they need it most.',
-    home_rbc_title: 'Works with RBC, not instead of it',
+    home_rbc_title: 'No donor? A blood centre can help',
     home_rbc_text: 'BloodLink connects people directly. If no donor matches, we show you the nearest official blood centre (RCBT).',
     home_rbc_link: 'See blood centres',
 
@@ -79,7 +78,7 @@ window.I18N = {
     res_reported: 'Reported',
     res_report_thanks: 'Thank you. We will check this donor.',
 
-    footer_admin: 'Admin',
+    footer_admin: 'Admin login',
     login_title: 'Admin login',
     login_intro: 'For BloodLink administrators only.',
     login_username: 'Username',
@@ -152,7 +151,6 @@ window.I18N.rw = {
   nav_centres: "Ibigo by'amaraso",
   nav_help: 'Ubufasha',
   footer_emergency: "Mu gihe cy'ubutabazi hamagara 912 (imbangukiragutabara) cyangwa umurongo wa RBC 114.",
-  footer_note: 'BloodLink Rwanda ikorana na RBC / NCBT, ntiyayisimbura.',
 
   reg_title: "Iyandikishe nk'utanga amaraso",
   reg_intro: 'Siga amakuru yawe kugira ngo umuryango ukeneye amaraso ubashe kuguhamagara. Bifata iminota itarenze ibiri.',
@@ -188,7 +186,7 @@ window.I18N.rw = {
   search_button: 'Shakisha',
   home_donor_title: 'Ushobora gutanga amaraso?',
   home_donor_text: 'Jya ku rutonde mu minota itarenze ibiri. Umuryango ushobora kuguhamagara ku munsi ukeneye ubufasha cyane.',
-  home_rbc_title: 'Ikorana na RBC, ntiyayisimbura',
+  home_rbc_title: "Nta utanga amaraso? Ikigo cy'amaraso cyagufasha",
   home_rbc_text: "BloodLink ihuza abantu ku buryo butaziguye. Niba nta utanga amaraso uboneka, tukwereka ikigo cy'amaraso (RCBT) kiri hafi yawe.",
   home_rbc_link: "Reba ibigo by'amaraso",
 
@@ -223,7 +221,7 @@ window.I18N.rw = {
   res_reported: 'Byatangajwe',
   res_report_thanks: 'Murakoze. Tuzagenzura uyu muntu.',
 
-  footer_admin: 'Umuyobozi',
+  footer_admin: "Kwinjira k'umuyobozi",
   login_title: "Kwinjira k'umuyobozi",
   login_intro: "Ni iy'abayobozi ba BloodLink gusa.",
   login_username: 'Izina ukoresha',
