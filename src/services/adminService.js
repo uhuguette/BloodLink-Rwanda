@@ -4,30 +4,64 @@ const { RECONFIRM_DAYS, REPORTS_TO_HIDE } = require('../constants');
 const { refreshStatuses } = require('./reportService');
 
 const MIN_PASSWORD = 8; // NFR 2
+const MIN_USERNAME = 3;
+const MAX_USERNAME = 32;
+const USERNAME_PATTERN = /^[A-Za-z0-9._-]+$/;
 
-// Creates the first admin from ADMIN_USERNAME / ADMIN_PASSWORD when none exists.
+// How many admin accounts exist. Zero means the site still needs its first
+// admin, which is created on the sign-up page (FR 5.0).
+function adminCount() {
+  return db.prepare('SELECT COUNT(*) AS n FROM admins').get().n;
+}
+
+const adminExists = () => adminCount() > 0;
+
+// Optional shortcut for servers: when ADMIN_USERNAME and ADMIN_PASSWORD are both
+// set and no admin exists yet, create that account at start-up. When they are not
+// set, nothing is created and the first admin signs up at /signup instead. No
+// default password is ever created, so the only credentials that work are the
+// ones the administrator chose.
 function ensureAdmin() {
-  const count = db.prepare('SELECT COUNT(*) AS n FROM admins').get().n;
-  if (count > 0) return null;
+  if (adminExists()) return null;
 
-  const username = process.env.ADMIN_USERNAME || 'admin';
-  let password = process.env.ADMIN_PASSWORD;
-  if (!password) {
-    password = 'BloodLink2026!';
-    if (process.env.NODE_ENV !== 'test') {
-      console.warn(`No ADMIN_PASSWORD set. Created admin "${username}" with the default password from the README. Change it before going live.`);
-    }
+  const username = process.env.ADMIN_USERNAME;
+  const password = process.env.ADMIN_PASSWORD;
+  if (!username || !password) return null;
+
+  const check = validateAdminInput(username, password);
+  if (!check.ok) {
+    console.warn(`ADMIN_USERNAME / ADMIN_PASSWORD were ignored: ${check.error}. Create the admin at /signup instead.`);
+    return null;
   }
-  createAdmin(username, password);
-  return username;
+  createAdmin(check.value.username, password);
+  return check.value.username;
+}
+
+// Returns { ok, error, value }. The error is a translation key so the sign-up
+// page can show it in English or Kinyarwanda.
+function validateAdminInput(username, password, confirm) {
+  const name = String(username || '').trim();
+  const pass = String(password || '');
+
+  if (name.length < MIN_USERNAME || name.length > MAX_USERNAME) return { ok: false, error: 'signup_err_username' };
+  if (!USERNAME_PATTERN.test(name)) return { ok: false, error: 'signup_err_username' };
+  if (pass.length < MIN_PASSWORD) return { ok: false, error: 'signup_err_password' };
+  if (confirm !== undefined && pass !== String(confirm)) return { ok: false, error: 'signup_err_match' };
+
+  return { ok: true, value: { username: name } };
 }
 
 function createAdmin(username, password) {
-  if (String(password).length < MIN_PASSWORD) {
-    throw new Error(`Admin password must be at least ${MIN_PASSWORD} characters.`);
+  const check = validateAdminInput(username, password);
+  if (!check.ok) throw new Error(`Invalid admin details (${check.error}).`);
+
+  const name = check.value.username;
+  if (db.prepare('SELECT 1 FROM admins WHERE username = ?').get(name)) {
+    throw new Error('taken');
   }
   const hash = bcrypt.hashSync(password, 12); // stored as a hash, never as plain text
-  db.prepare('INSERT INTO admins (username, password_hash) VALUES (?, ?)').run(username, hash);
+  const info = db.prepare('INSERT INTO admins (username, password_hash) VALUES (?, ?)').run(name, hash);
+  return { id: Number(info.lastInsertRowid), username: name };
 }
 
 // Compares against a dummy hash for unknown users so the response time does not reveal usernames.
@@ -85,4 +119,18 @@ function removalLog() {
   `).all();
 }
 
-module.exports = { ensureAdmin, createAdmin, checkLogin, listDonors, removeDonor, keepDonor, removalLog, MIN_PASSWORD };
+module.exports = {
+  ensureAdmin,
+  createAdmin,
+  validateAdminInput,
+  adminCount,
+  adminExists,
+  checkLogin,
+  listDonors,
+  removeDonor,
+  keepDonor,
+  removalLog,
+  MIN_PASSWORD,
+  MIN_USERNAME,
+  MAX_USERNAME,
+};
