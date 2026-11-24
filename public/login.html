@@ -32,6 +32,7 @@
         <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required>
       </div>
       <button class="btn block" type="submit" data-i18n="login_submit">Log in</button>
+      <p class="hint center mt hidden" id="setup-link"><a href="/signup" data-i18n="login_setup_link">First time here? Create the admin account</a></p>
     </form>
   </main>
 
@@ -53,6 +54,14 @@
 
       if (params.has('denied')) show('login_denied');
       if (params.has('expired')) show('login_expired', 'warn');
+
+      // No admin account yet? Point the first administrator to the sign-up page.
+      window.api('/api/admin/setup').then(({ ok, data }) => {
+        if (ok && data.needsSetup) {
+          document.getElementById('setup-link').classList.remove('hidden');
+          show('login_needs_setup', 'warn');
+        }
+      });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();

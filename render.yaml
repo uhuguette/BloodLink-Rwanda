@@ -14,8 +14,11 @@ services:
         value: 20.11.0
       - key: SESSION_SECRET
         generateValue: true
+      # Leave both empty and create the admin account yourself on /signup
+      # after the first deploy. Set them only if you prefer the account to be
+      # created at start-up instead.
       - key: ADMIN_USERNAME
-        value: admin
+        sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: SEED_DEMO

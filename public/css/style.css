@@ -320,6 +320,8 @@ main { padding-bottom: 56px; }
 .login-wrap { max-width: 460px; }
 .admin-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
 .admin-head p { margin: 0; }
+.admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.admin-actions .btn { text-decoration: none; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat {
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
