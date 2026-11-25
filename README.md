@@ -9,7 +9,7 @@ BloodLink Rwanda fills that gap: donors register their blood type, district and 
 search and call them. When nobody matches, the site points them to the nearest official blood centre (RCBT).
 It works **alongside** RBC, not instead of it.
 
-- **Live demo:** _add your Render URL here after deploying_
+- **Live demo:** <https://bloodlink-rwanda.onrender.com>
 - **Demo video:** _add your video link here_
 - **SRS document:** _add the link to your SRS here_
 - **Author:** Uwase Huguette, African Leadership University
