@@ -10,7 +10,7 @@ let donorId;
 test.before(async () => {
   ctx = await startServer();
   donorId = Number(db.prepare(`INSERT INTO donors (full_name, blood_type, district, phone, consent)
-                               VALUES ('Test Donor', 'B+', 'Ngoma', '0700000990', 1)`).run().lastInsertRowid);
+                               VALUES ('Test Donor', 'B+', 'Ngoma', '0788776990', 1)`).run().lastInsertRowid);
 });
 test.after(() => ctx.server.close());
 

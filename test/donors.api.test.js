@@ -6,7 +6,7 @@ let ctx;
 test.before(async () => { ctx = await startServer(); });
 test.after(() => ctx.server.close());
 
-const donor = { fullName: 'Eric Habimana', bloodType: 'AB-', district: 'Kicukiro', phone: '0700000901', consent: true };
+const donor = { fullName: 'Eric Habimana', bloodType: 'AB-', district: 'Kicukiro', phone: '0791204901', consent: true };
 
 test('registers a new donor', async () => {
   const r = await json(ctx.base, '/api/donors', { method: 'POST', body: donor });
@@ -21,7 +21,7 @@ test('same phone number updates instead of duplicating', async () => {
 });
 
 test('blocks registration without consent', async () => {
-  const r = await json(ctx.base, '/api/donors', { method: 'POST', body: { ...donor, phone: '0700000902', consent: false } });
+  const r = await json(ctx.base, '/api/donors', { method: 'POST', body: { ...donor, phone: '0791204902', consent: false } });
   assert.strictEqual(r.status, 400);
   assert.strictEqual(r.body.errors.consent, 'err_consent');
 });
