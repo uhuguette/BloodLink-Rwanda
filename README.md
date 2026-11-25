@@ -11,6 +11,7 @@ It works **alongside** RBC, not instead of it.
 
 - **Live demo:** _add your Render URL here after deploying_
 - **Demo video:** _add your video link here_
+- **SRS document:** _add the link to your SRS here_
 - **Author:** Uwase Huguette, African Leadership University
 
 ---
@@ -176,8 +177,12 @@ created and the sign-up page stays open for the first admin.
 | Remove a donor | It disappears and a line is added to the removal log |
 | Press **Kinyarwanda** in the header | Every label on the page changes language |
 
-Sample donors use phone numbers starting with `0700`, which no Rwandan network gives out, so nobody
-real is called during testing.
+> **The 30 sample donors are invented.** Their names and phone numbers were made up. The numbers use the
+> real Rwandan mobile prefixes (078 / 079 for MTN, 072 / 073 for Airtel) so the demo looks like the real
+> thing, which means a sample number could by chance belong to a real subscriber. **Please do not call
+> them.** The Help page says the same thing to visitors, in English and Kinyarwanda. Nothing dials by
+> itself: a number is only called if someone taps it. To run the site with an empty donor list instead,
+> set `SEED_DEMO=false`.
 
 ### 7. Run the tests
 
