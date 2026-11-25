@@ -36,6 +36,48 @@ It works **alongside** RBC, not instead of it.
 The look is inspired by **Imigongo**, the geometric art from eastern Rwanda: black, clay and cream
 zigzag bands, with blood red as the accent. Blood types are picked by tapping a blood-drop button.
 
+## SRS requirement coverage
+
+Every requirement in the SRS, where it lives in the code, and how it is checked.
+
+### Functional requirements
+
+| Req | Requirement | Where it lives | How it is checked |
+|---|---|---|---|
+| FR 1.1 | Collect name, phone, blood type, district, consent tick | `public/register.html`, `src/routes/donors.js` | `donors.api.test.js` - "registers a new donor" |
+| FR 1.2 | Reject invalid Rwandan numbers; same number updates instead of duplicating | `src/validators.js`, `src/services/donorService.js` | `validators.test.js`, "same phone number updates instead of duplicating" |
+| FR 1.3 | Save with registration date and last-confirmed date | `src/db.js` (`registered_at`, `last_confirmed_at`) | `donors.api.test.js` |
+| FR 2.1 | Filter by blood type | `public/index.html`, `GET /api/search` | `search.api.test.js` |
+| FR 2.2 | Filter by district | `public/index.html`, `GET /api/search` | `search.api.test.js` |
+| FR 2.3 | Inactive donors never appear | `src/services/searchService.js` | "donors not reconfirmed in 90 days are hidden" |
+| FR 3.1 | Up to 20 donors: first name, type, district, phone, last confirmed | `public/results.html`, `MAX_RESULTS` | "never returns more than 20 donors" |
+| FR 3.2 | No results: message plus nearest RCBT contacts | `src/routes/search.js` | "no match returns RCBT contacts with the nearest centre first" |
+| FR 3.3 | Report button on every result | `public/js/results.js`, `src/services/reportService.js` | "two reports from different visitors hide a donor" |
+| FR 4.1 | List of official RCBT centres with contacts | `public/centres.html`, `src/rcbtData.js` | `search.api.test.js` |
+| FR 5.1 | Admin signs in with username and password | `public/login.html`, `public/signup.html`, `src/services/adminService.js` | `signup.api.test.js`, "wrong password gives access denied" |
+| FR 5.2 | Admin sees the full list with flagged donors marked | `views/admin.html`, `listDonors()` | "admin logs in and sees the flagged donor" |
+| FR 5.3 | Admin removes flagged or invalid donors after review | `removeDonor()`, `keepDonor()` | `admin.api.test.js` |
+
+### Non-functional requirements
+
+| Req | Requirement | Where it lives | How it is checked |
+|---|---|---|---|
+| NFR 1 | Admin pages and APIs blocked without login | `src/middleware/requireAdmin.js` | "NFR 1: admin API and page are blocked without login" |
+| NFR 2 | Password hashed, 8+ characters, 15-minute session timeout | `adminService.js` (bcrypt, 12 rounds), `middleware/security.js` | "NFR 2: admin password is stored as a hash", `signup.api.test.js` |
+| NFR 3 | Every removal logged with admin, donor ID and time | `removal_log` table | "NFR 3: removing a donor writes a log entry..." |
+| NFR 4 | Only the four fields collected, consent mandatory | `src/validators.js` | "no consent means no sign up" |
+| NFR 5 | Max 20 results, first names only, no public export | `searchService.js` | "finds a matching donor and shows only the first name", `performance.test.js` |
+| NFR 6 | HTTP redirects to HTTPS | `middleware/security.js` (`forceHttps`) | By hand on the live URL - only active when `NODE_ENV=production` |
+| NFR 7 | Search under 2 s with 1,000 donors (19 of 20) | `searchService.js`, index on `(blood_type, district, status)` | `performance.test.js` + `npm run benchmark` - **20 of 20, median 5.8 ms** |
+| NFR 8 | 50 people at once, answered within 3 s | Express + SQLite WAL mode | `performance.test.js` + `npm run benchmark` - **50 of 50 in 203 ms** |
+| NFR 9 | Register in under 2 minutes, search in under 1 | Three-step forms, no account needed to search | **Needs people** - watch 4 users, unassisted |
+| NFR 10 | At most 3 actions to search, readable at 360 px | `public/index.html`, `public/css/style.css` | Checked by hand at 360 px; **needs people** for the 3-action count |
+| NFR 11 | English and Kinyarwanda, one button on every page | `public/js/i18n.js`, `public/js/layout.js` | "every English text has a Kinyarwanda version and the other way round" |
+| NFR 12 | Chrome and Firefox, Android and desktop, no sideways scroll at 360 px | Responsive CSS, no framework | Checked by hand at 360 px |
+
+**Still open:** NFR 9 and the 3-action count in NFR 10 are usability tests that need real people, and NFR 6
+can only be shown on the deployed HTTPS URL. Everything else above runs automatically with `npm test`.
+
 ## Tech stack
 
 - **Front end:** HTML, CSS, plain JavaScript (no framework, no build step)
@@ -55,12 +97,14 @@ BloodLink-Rwanda/
 │   ├── constants.js          # blood types, 30 districts, provinces, limits
 │   ├── validators.js         # donor validation (phone, consent...)
 │   ├── seed.js / rcbtData.js # 30 sample donors and the RCBT centres
+│   ├── loadTestData.js       # builds 1,000 donors for the NFR 7 / NFR 8 checks
 │   ├── middleware/           # HTTPS redirect, sessions, admin guard
 │   ├── routes/               # donors, search, admin, meta
 │   └── services/             # database logic
 ├── public/                   # pages, CSS and browser JavaScript
 ├── views/admin.html          # admin page, only served after login
 ├── scripts/seed.js           # reset or reload sample donors
+├── scripts/benchmark.js      # prints the NFR 7 and NFR 8 performance figures
 └── test/                     # automated tests
 ```
 
@@ -141,8 +185,26 @@ real is called during testing.
 npm test
 ```
 
-The tests cover validation, registration, search limits, the 90-day rule, the RCBT fallback, admin
-access control, password hashing, reporting, the removal log and translation coverage.
+33 tests cover validation, registration, search limits, the 90-day rule, the RCBT fallback, admin
+sign-up and access control, password hashing, reporting, the removal log, translation coverage and the
+two performance requirements.
+
+### 8. Check the performance requirements
+
+```bash
+npm run benchmark
+```
+
+This builds a throwaway database of **1,000 donors**, runs the two tests exactly as the SRS describes them
+and prints the figures. It never touches your own database.
+
+| | Requirement | Measured |
+|---|---|---|
+| **NFR 7** | 20 searches with 1,000 donors, at least 19 under 2 s | **20 of 20 passed** - median 5.8 ms, slowest 108 ms |
+| **NFR 8** | 50 people searching at once, each answered within 3 s | **50 of 50 passed** - all answered in 203 ms, slowest 178 ms |
+
+Measured on a laptop with Node 20. The same two checks also run as part of `npm test`
+(`test/performance.test.js`), so they fail the build if a change ever makes search slow.
 
 ### Useful commands
 
@@ -151,6 +213,7 @@ access control, password hashing, reporting, the removal log and translation cov
 | `npm start` | Start the server |
 | `npm run dev` | Start and restart on file changes |
 | `npm test` | Run all tests |
+| `npm run benchmark` | Measure NFR 7 and NFR 8 and print the table above |
 | `npm run seed -- --reset` | Delete all donors and load the 30 sample donors again |
 
 ## Environment variables
