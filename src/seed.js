@@ -6,6 +6,7 @@
 // Nothing dials automatically: a number is only called if a person taps it.
 // The Help page says these are sample entries, and SEED_DEMO=false starts the
 // site with an empty donor list.
+const crypto = require('crypto');
 const db = require('./db');
 
 const SAMPLE = [
@@ -43,22 +44,116 @@ const SAMPLE = [
   ['Moses Gatete', 'A+', 'Huye', 3, '0783269415'],
 ];
 
-function seedDemoDonors({ reset = false } = {}) {
-  if (reset) db.exec('DELETE FROM donors');
-  const count = db.prepare('SELECT COUNT(*) AS n FROM donors').get().n;
-  if (count > 0) return 0;
+const FINGERPRINT_KEY = 'sample_donors_fingerprint';
 
-  const insert = db.prepare(`
-    INSERT INTO donors (full_name, blood_type, district, phone, consent, registered_at, last_confirmed_at)
-    VALUES (?, ?, ?, ?, 1, datetime('now', ?), datetime('now', ?))
-  `);
-  db.transaction(() => {
-    SAMPLE.forEach(([name, type, district, daysAgo, phone]) => {
-      const when = `-${daysAgo} days`;
-      insert.run(name, type, district, phone, when, when);
-    });
-  })();
-  return SAMPLE.length;
+// A short hash of the sample list. When anything in SAMPLE changes - a phone
+// number, a district, a whole donor - the hash changes, which is how an
+// existing database knows its demo data is out of date.
+function fingerprint() {
+  return crypto.createHash('sha256').update(JSON.stringify(SAMPLE)).digest('hex').slice(0, 16);
 }
 
-module.exports = { seedDemoDonors };
+const readFingerprint = () => {
+  const row = db.prepare('SELECT value FROM meta WHERE key = ?').get(FINGERPRINT_KEY);
+  return row ? row.value : null;
+};
+
+const writeFingerprint = (value) => db
+  .prepare('INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+  .run(FINGERPRINT_KEY, value);
+
+// Rows written before is_sample existed carry no marker. The first run after
+// the upgrade marks the ones whose name is in the sample list; everybody else
+// is treated as a real registration and is never touched again.
+function markOldSampleRows() {
+  const mark = db.prepare('UPDATE donors SET is_sample = 1 WHERE full_name = ? AND is_sample = 0');
+  return SAMPLE.reduce((n, [name]) => n + mark.run(name).changes, 0);
+}
+
+// Brings the sample donors in the database into line with SAMPLE: updates the
+// ones already there, adds the missing ones, drops sample rows that have been
+// taken out of the list. Donors who registered themselves (is_sample = 0) are
+// never read, changed or deleted here.
+const syncSampleDonors = db.transaction(() => {
+  const existing = new Map(
+    db.prepare('SELECT id, full_name FROM donors WHERE is_sample = 1').all().map((r) => [r.full_name, r.id]),
+  );
+
+  const update = db.prepare(`
+    UPDATE donors
+       SET blood_type = @bloodType, district = @district, phone = @phone,
+           registered_at = datetime('now', @when), last_confirmed_at = datetime('now', @when),
+           status = 'active'
+     WHERE id = @id
+  `);
+  const insert = db.prepare(`
+    INSERT INTO donors (full_name, blood_type, district, phone, consent, registered_at, last_confirmed_at, is_sample)
+    VALUES (@fullName, @bloodType, @district, @phone, 1, datetime('now', @when), datetime('now', @when), 1)
+  `);
+
+  const result = { inserted: 0, updated: 0, removed: 0, skipped: [] };
+  const wanted = new Set();
+
+  SAMPLE.forEach(([fullName, bloodType, district, daysAgo, phone]) => {
+    wanted.add(fullName);
+    const when = `-${daysAgo} days`;
+    const id = existing.get(fullName);
+    try {
+      if (id) {
+        update.run({ id, bloodType, district, phone, when });
+        result.updated += 1;
+      } else {
+        insert.run({ fullName, bloodType, district, phone, when });
+        result.inserted += 1;
+      }
+    } catch (e) {
+      // Almost always a real donor already using that number. Leave both rows
+      // alone rather than fail at start-up.
+      result.skipped.push(`${fullName} (${e.message})`);
+    }
+  });
+
+  const remove = db.prepare('DELETE FROM donors WHERE is_sample = 1 AND full_name = ?');
+  existing.forEach((id, name) => {
+    if (!wanted.has(name)) result.removed += remove.run(name).changes;
+  });
+
+  return result;
+});
+
+// Called at every start-up. It does nothing at all once the database already
+// matches the sample list, so the normal case costs one small SELECT.
+//
+//   reset: true  delete every donor, including real registrations, and start over
+//   force: true  re-sync the sample donors even if the fingerprint matches
+function seedDemoDonors({ reset = false, force = false } = {}) {
+  if (reset) {
+    db.exec('DELETE FROM donors');
+    db.prepare('DELETE FROM meta WHERE key = ?').run(FINGERPRINT_KEY);
+  }
+
+  const current = fingerprint();
+  if (!reset && !force && readFingerprint() === current) {
+    return { inserted: 0, updated: 0, removed: 0, skipped: [], upToDate: true };
+  }
+
+  if (!reset) markOldSampleRows();
+  const result = syncSampleDonors();
+  writeFingerprint(current);
+
+  if (result.skipped.length) {
+    console.warn(`Sample donors skipped: ${result.skipped.join(', ')}`);
+  }
+  return { ...result, upToDate: false };
+}
+
+// "3 added, 2 updated" for the start-up log; null when there was nothing to do.
+function describeSeed(result) {
+  const parts = [];
+  if (result.inserted) parts.push(`${result.inserted} added`);
+  if (result.updated) parts.push(`${result.updated} updated`);
+  if (result.removed) parts.push(`${result.removed} removed`);
+  return parts.length ? parts.join(', ') : null;
+}
+
+module.exports = { seedDemoDonors, describeSeed, SAMPLE };

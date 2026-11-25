@@ -22,10 +22,21 @@ db.exec(`
     consent           INTEGER NOT NULL CHECK (consent = 1),
     registered_at     TEXT    NOT NULL DEFAULT (datetime('now')),
     last_confirmed_at TEXT    NOT NULL DEFAULT (datetime('now')),
-    status            TEXT    NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'hidden'))
+    status            TEXT    NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'hidden')),
+    -- 1 for the demo donors loaded from src/seed.js, 0 for people who
+    -- registered themselves. Only sample rows are ever rewritten or removed
+    -- when the sample list changes.
+    is_sample         INTEGER NOT NULL DEFAULT 0
   );
 
   CREATE INDEX IF NOT EXISTS idx_donors_search ON donors (blood_type, district, status);
+
+  -- Small key/value store. Holds the fingerprint of the sample donor list, so
+  -- an existing database notices when that list has been edited.
+  CREATE TABLE IF NOT EXISTS meta (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
 
   CREATE TABLE IF NOT EXISTS rcbt_centres (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,6 +69,13 @@ db.exec(`
     removed_at     TEXT    NOT NULL DEFAULT (datetime('now'))
   );
 `);
+
+// Databases created before is_sample existed get the column added here, so an
+// older data/bloodlink.db keeps working without being deleted.
+const donorColumns = db.prepare('PRAGMA table_info(donors)').all().map((c) => c.name);
+if (!donorColumns.includes('is_sample')) {
+  db.exec('ALTER TABLE donors ADD COLUMN is_sample INTEGER NOT NULL DEFAULT 0');
+}
 
 // Fill the RCBT contacts the first time the database is created.
 if (db.prepare('SELECT COUNT(*) AS n FROM rcbt_centres').get().n === 0) {
