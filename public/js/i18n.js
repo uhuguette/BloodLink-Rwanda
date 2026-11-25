@@ -158,6 +158,8 @@ window.I18N = {
     help_a5: 'So seekers only call donors who can still give. If you do not reconfirm within 90 days you are hidden from search. Register again with the same phone number and you are visible again.',
     help_q6: 'What does "Number not working?" do?',
     help_a6: 'If a number is wrong or switched off, press it. After two reports the donor is hidden and an admin checks the details.',
+    help_q8: 'Are the donors on this demo site real people?',
+    help_a8: 'No. BloodLink Rwanda is a student prototype. The 30 donors loaded as sample data are invented, and their phone numbers were made up to look like real Rwandan numbers. Please do not call them. Only donors who registered themselves through this site are real.',
     help_q7: 'Can anyone give blood?',
     help_a7: 'The blood centre always checks that it is safe for you to give blood before taking it. If you are not sure, ask your nearest RCBT or call 114.',
   },
@@ -321,6 +323,8 @@ window.I18N.rw = {
   help_a5: "Kugira ngo abashaka amaraso bahamagare abagishobora gutanga gusa. Niba utongeye kwemeza mu minsi 90, urahishwa mu ishakisha. Ongera wiyandikishe ukoresheje nimero imwe, wongere ugaragare.",
   help_q6: 'Akabuto "Nimero ntikora?" gakora iki?',
   help_a6: "Niba nimero itari yo cyangwa itariho, kanda kuri ako kabuto. Nyuma y'amatangazo abiri, uwo muntu arahishwa kandi umuyobozi akagenzura amakuru ye.",
+  help_q8: "Abatanga amaraso bari kuri uru rubuga rw'igerageza ni abantu nyakuri?",
+  help_a8: "Oya. BloodLink Rwanda ni umushinga w'umunyeshuri. Abatanga amaraso 30 bashyizwemo nk'urugero barahimbwe, na nimero zabo za telefoni zahimbwe kugira ngo zisa n'iza nyakuri. Turabasaba kutabahamagara. Abiyandikishije ubwabo kuri uru rubuga ni bo gusa ari abanyakuri.",
   help_q7: 'Umuntu wese ashobora gutanga amaraso?',
   help_a7: "Ikigo cy'amaraso buri gihe kibanza kugenzura ko nta kibazo wagira mbere yo kugutwara amaraso. Niba utabizi neza, baza RCBT ikwegereye cyangwa uhamagare 114.",
 };

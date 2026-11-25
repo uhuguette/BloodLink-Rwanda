@@ -10,7 +10,8 @@ const assert = require('node:assert');
 const { startServer, json } = require('./helpers');
 const db = require('../src/db');
 const { BLOOD_TYPES, DISTRICTS, MAX_RESULTS } = require('../src/constants');
-const { seedLoadTestDonors, PHONE_PREFIX } = require('../src/loadTestData');
+const { seedLoadTestDonors, RWANDAN_PREFIXES } = require('../src/loadTestData');
+const { isValidRwandanPhone } = require('../src/validators');
 
 const DONOR_COUNT = 1000;
 const NFR7_SEARCHES = 20;
@@ -105,7 +106,16 @@ test(`NFR 8: ${NFR8_USERS} people searching at the same time all get an answer u
   );
 });
 
-test('the load-test donors use reserved phone numbers, so nobody real is called', () => {
-  const stray = db.prepare(`SELECT phone FROM donors WHERE phone NOT LIKE '${PHONE_PREFIX}%' LIMIT 1`).get();
-  assert.strictEqual(stray, undefined, `load-test donor phone numbers must all start with ${PHONE_PREFIX}`);
+test('every generated number is a valid, unique Rwandan mobile number', () => {
+  const phones = db.prepare('SELECT phone FROM donors').all().map((r) => r.phone);
+
+  const invalid = phones.filter((p) => !isValidRwandanPhone(p));
+  assert.deepStrictEqual(invalid, [], 'every generated number must pass the same check a real donor does');
+
+  const wrongNetwork = phones.filter((p) => !RWANDAN_PREFIXES.includes(p.slice(0, 3)));
+  assert.deepStrictEqual(wrongNetwork, [], `numbers must use a real prefix: ${RWANDAN_PREFIXES.join(', ')}`);
+
+  // The donors table has a UNIQUE index on phone, so a repeat would have thrown
+  // on insert. This checks the generator directly, with a clearer message.
+  assert.strictEqual(new Set(phones).size, phones.length, 'two donors were given the same number');
 });

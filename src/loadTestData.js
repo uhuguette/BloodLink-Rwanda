@@ -8,11 +8,22 @@
 const db = require('./db');
 const { BLOOD_TYPES, DISTRICTS, PROVINCES } = require('./constants');
 
-// 0700 numbers are not issued by any Rwandan network, so no real person can be
-// called from test data. The 30 sample donors use 070000xxxx; the load test
-// starts at 0700100000 and counts up, so the two never collide.
-const PHONE_PREFIX = '0700';
-const FIRST_LOAD_TEST_PHONE = 100000;
+// The real Rwandan mobile prefixes, so the generated list looks like the real
+// thing. These rows only ever exist in the throwaway in-memory database used by
+// the performance test and the benchmark, so they are never shown to anyone.
+const RWANDAN_PREFIXES = ['078', '079', '072', '073'];
+
+// Turns a donor's position in the list into a 7-digit subscriber number that
+// looks random but never repeats. 3141593 shares no factor with 10,000,000,
+// so multiplying by it maps 0...9,999,999 onto itself one-to-one.
+const SCRAMBLE = 3141593;
+const OFFSET = 2718281;
+
+function phoneFor(index) {
+  const prefix = RWANDAN_PREFIXES[index % RWANDAN_PREFIXES.length];
+  const subscriber = (index * SCRAMBLE + OFFSET) % 10000000;
+  return prefix + String(subscriber).padStart(7, '0');
+}
 
 // Rough real-world blood group frequencies, so the common types are crowded and
 // the rare ones are not. A search for AB- then does what it does in real life:
@@ -93,7 +104,7 @@ function seedLoadTestDonors(count = 1000, seed = 20260924) {
       fullName: `${first} ${last}`,
       bloodType: pickBloodType(),
       district: pickDistrict(),
-      phone: PHONE_PREFIX + String(FIRST_LOAD_TEST_PHONE + i).padStart(6, '0'),
+      phone: phoneFor(i),
       // Every donor reconfirmed within the last 85 days, so all of them are
       // searchable and the 90-day rule does not quietly shrink the data set.
       daysAgo: Math.floor(random() * 85),
@@ -112,7 +123,8 @@ function unweightedBloodTypes() {
 module.exports = {
   seedLoadTestDonors,
   unweightedBloodTypes,
-  PHONE_PREFIX,
+  phoneFor,
+  RWANDAN_PREFIXES,
   BLOOD_TYPE_WEIGHTS,
   PROVINCES,
 };
