@@ -230,8 +230,8 @@ All are optional locally. See `.env.example`.
 | `PORT` | `3000` | Port the server listens on |
 | `NODE_ENV` | - | Set to `production` on the live site (turns on HTTPS redirect and secure cookies) |
 | `SESSION_SECRET` | random | Signs the admin session cookie |
-| `ADMIN_USERNAME` | - | Optional. With `ADMIN_PASSWORD`, creates the first admin at start-up instead of on `/signup` |
-| `ADMIN_PASSWORD` | - | Optional. First admin password (8+ characters). No default password exists |
+| `ADMIN_USERNAME` | - | Optional locally, **set it on a host with no persistent disk**. With `ADMIN_PASSWORD`, recreates the admin at every start-up instead of waiting for `/signup` |
+| `ADMIN_PASSWORD` | - | The admin password (8+ characters). There is no default password: without this the account is only created through `/signup` |
 | `SEED_DEMO` | `true` | Load the 30 sample donors when the donor table is empty |
 | `DB_PATH` | `data/bloodlink.db` | Location of the SQLite file |
 
@@ -240,20 +240,35 @@ All are optional locally. See `.env.example`.
 1. Push this repository to GitHub (public).
 2. Sign in at [render.com](https://render.com) with GitHub.
 3. Click **New +** > **Blueprint**, choose this repository. Render reads `render.yaml`.
-4. Leave `ADMIN_USERNAME` and `ADMIN_PASSWORD` empty and click **Apply**.
-5. Wait for the build to finish and open the `https://bloodlink-rwanda-xxxx.onrender.com` link.
-6. Go straight to `https://your-url.onrender.com/signup` and create your admin account. Do this as soon as
-   the first deploy is live: the sign-up page is open to anyone until the first account exists, and it closes
-   itself the moment you create it.
-7. Put that link at the top of this README.
+4. Render asks for two values. Type the **username** and **password** you want to administer the site
+   with (password: 8 characters or more). Nothing else needs filling in: `SESSION_SECRET` is generated
+   by Render, and everything else already has a value. Click **Apply**.
+5. The first build takes 2-4 minutes, mostly compiling `better-sqlite3`. Wait for **Live**, then open the
+   `https://bloodlink-rwanda-xxxx.onrender.com` link.
+6. Check it: `https://your-url.onrender.com/api/health` should answer `{"ok":true,...}`, and
+   `http://your-url.onrender.com` (plain http) should jump to `https://` (NFR 6).
+7. Log in at `https://your-url.onrender.com/login` with the username and password from step 4.
+8. Put the link at the top of this README, next to **Live demo**.
+
+**Why the admin details go in the blueprint.** The free plan has no persistent disk. The instance spins
+down after about 15 minutes without visitors, and the filesystem is wiped whenever it starts again or
+redeploys, so `data/bloodlink.db` does not survive. With `ADMIN_USERNAME` and `ADMIN_PASSWORD` set,
+the admin account is recreated from them on every cold start, so your login keeps working and `/signup`
+stays closed. Without them the site would come back with no admin at all, and the sign-up page would
+reopen to whoever visited next. `SEED_DEMO=true` reloads the 30 sample donors for the same reason, so
+the site is never empty when somebody opens it.
+
+To demonstrate the sign-up flow instead, run it locally (`npm start` with no `ADMIN_*` set, then
+`/signup`), or deploy once without the two variables, sign up, and add them afterwards in
+**Environment** in the Render dashboard.
 
 **Without the blueprint:** New + > Web Service > pick the repo > Build command `npm ci` >
 Start command `npm start` > add the environment variables above with `NODE_ENV=production`.
 
 **Free plan notes:** the app sleeps after 15 minutes without visitors, so the first visit can take
-about a minute. The free disk is not permanent: after a restart the database starts fresh and the
-30 sample donors are loaded again. For a real launch, add a Render persistent disk and set `DB_PATH`
-to it, or move to a hosted database.
+about a minute. Sessions are held in memory, so a restart also logs the admin out; logging in again is
+all that is needed. For a real launch, add a Render persistent disk and set `DB_PATH` to it, or move to
+a hosted database.
 
 ## API
 
@@ -278,8 +293,10 @@ to it, or move to a hosted database.
 - The Kinyarwanda translations should be reviewed by two native speakers (planned in Sprint 4).
 - Blood types are self-reported. There is no medical verification in this MVP.
 - Before a real public launch, BloodLink must comply with Rwanda's data protection law (Law No. 058/2021), because it stores phone numbers.
-- The free hosting plan does not keep data between restarts (see above). After a restart with no persistent
-  disk the admins table is empty again, so `/signup` reopens and the account has to be created once more.
+- The free hosting plan does not keep data between restarts (see above). Donors registered on the live site
+  are lost when the instance restarts, which is why the 30 sample donors are reloaded automatically. Setting
+  `ADMIN_USERNAME` and `ADMIN_PASSWORD` keeps the admin account working across restarts; without them the
+  admins table comes back empty and `/signup` reopens to the next visitor.
 - There is no "forgot password" flow yet. A locked-out admin is recovered by another admin, or by deleting the
   row from the `admins` table.
 
