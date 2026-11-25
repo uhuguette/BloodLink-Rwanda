@@ -1,6 +1,18 @@
-// Usage: npm run seed            -> adds sample donors if the table is empty
-//        npm run seed -- --reset -> deletes all donors and adds the samples again
-const { seedDemoDonors } = require('../src/seed');
+// Usage: npm run seed             -> bring the sample donors in line with src/seed.js
+//        npm run seed -- --force   -> re-sync them even if nothing has changed
+//        npm run seed -- --reset   -> delete EVERY donor, real ones included, and start over
+//
+// Without --reset, people who registered themselves are never touched.
+const { seedDemoDonors, describeSeed } = require('../src/seed');
 
-const added = seedDemoDonors({ reset: process.argv.includes('--reset') });
-console.log(added ? `Added ${added} sample donors.` : 'Donors already exist. Use --reset to start over.');
+const reset = process.argv.includes('--reset');
+const result = seedDemoDonors({ reset, force: process.argv.includes('--force') });
+
+if (result.upToDate) {
+  console.log('Sample donors are already up to date. Use --force to re-sync, or --reset to start over.');
+} else {
+  console.log(`Sample donors: ${describeSeed(result) || 'no changes needed'}.`);
+}
+if (result.skipped.length) {
+  console.log(`Skipped: ${result.skipped.join(', ')}`);
+}

@@ -97,7 +97,7 @@ BloodLink-Rwanda/
 │   ├── db.js                 # SQLite tables: donors, reports, admins, removal_log, rcbt_centres
 │   ├── constants.js          # blood types, 30 districts, provinces, limits
 │   ├── validators.js         # donor validation (phone, consent...)
-│   ├── seed.js / rcbtData.js # 30 sample donors and the RCBT centres
+│   ├── seed.js / rcbtData.js # 30 sample donors (kept in sync) and the RCBT centres
 │   ├── loadTestData.js       # builds 1,000 donors for the NFR 7 / NFR 8 checks
 │   ├── middleware/           # HTTPS redirect, sessions, admin guard
 │   ├── routes/               # donors, search, admin, meta
@@ -184,6 +184,13 @@ created and the sign-up page stays open for the first admin.
 > itself: a number is only called if someone taps it. To run the site with an empty donor list instead,
 > set `SEED_DEMO=false`.
 
+**Sample donors stay in step with the code.** Each donor row is marked as sample data or as a real
+registration, and the app stores a fingerprint of the sample list. When `src/seed.js` is edited, the next
+start-up notices the fingerprint has changed and rewrites the sample rows to match: no need to delete the
+database. Donors who registered themselves are never read, changed or removed by this. Only
+`npm run seed -- --reset` touches them, and it says so. A sample donor that an admin removed earlier comes
+back on the next re-sync, because a re-sync restores the demo data to what the code says it should be.
+
 ### 7. Run the tests
 
 ```bash
@@ -219,7 +226,9 @@ Measured on a laptop with Node 20. The same two checks also run as part of `npm 
 | `npm run dev` | Start and restart on file changes |
 | `npm test` | Run all tests |
 | `npm run benchmark` | Measure NFR 7 and NFR 8 and print the table above |
-| `npm run seed -- --reset` | Delete all donors and load the 30 sample donors again |
+| `npm run seed` | Bring the sample donors in line with `src/seed.js` (leaves real registrations alone) |
+| `npm run seed -- --force` | Re-sync the sample donors even if nothing changed |
+| `npm run seed -- --reset` | **Deletes every donor, real ones included**, then loads the samples again |
 
 ## Environment variables
 
