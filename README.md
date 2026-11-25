@@ -10,8 +10,8 @@ search and call them. When nobody matches, the site points them to the nearest o
 It works **alongside** RBC, not instead of it.
 
 - **Live demo:** <https://bloodlink-rwanda.onrender.com>
-- **Demo video:** _add your video link here_
-- **SRS document:** _add the link to your SRS here_
+- **Demo video:** <https://youtu.be/stUb3Pphjj8>
+- **SRS document:** <https://docs.google.com/document/d/1ERi57z84KPk_tA9LU9ZMsW_5NMTLiAhZ3oVTlrpgplg/edit?usp=sharing>
 - **Author:** Uwase Huguette, African Leadership University
 
 ---
